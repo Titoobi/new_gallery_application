@@ -5,6 +5,9 @@ import webapp2
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+
+from dashboard import Dashboard
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -24,6 +27,7 @@ class MainPage(webapp2.RequestHandler):
         if user:
             url = users.create_logout_url(self.request.uri)
             login_status = 'Logout'
+            self.redirect('/dashboard')
 
             myuser_key = ndb.Key('MyUser', user.user_id())
             myuser = myuser_key.get()
@@ -45,4 +49,5 @@ class MainPage(webapp2.RequestHandler):
 # starts the application
 app = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/dashboard', Dashboard),
 ], debug=True)

@@ -7,6 +7,7 @@ from google.appengine.ext import ndb
 
 
 from dashboard import Dashboard
+# from galleryPage import GalleryPage
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -50,4 +51,5 @@ class MainPage(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/dashboard', Dashboard),
+    # ('/gallery', GalleryPage),
 ], debug=True)

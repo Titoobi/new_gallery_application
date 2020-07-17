@@ -71,9 +71,18 @@
 
           <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
 
+            {% set bg_img = Gallery.get_by_id(i.id()).image_key  %}
+            {% set l = Gallery.get_by_id(i.id()).image_key |length %}
             {% set gallery_deets = Gallery.get_by_id(i.id()) %}
 
+            {% if l == 0  %}
               <div class="icon-box" style="width: 100%;">
+            {% else %}
+              {% for y in bg_img %}
+                <div class="icon-box" style="background-image: url('/view_photo/{{ Image.get_by_id( y.id() ).blobs }}'); width: 100%; background-size: cover; background-repeat: no-repeat;">
+                {% break %}
+              {% endfor %}
+            {% endif %}
 
 
                   <div id="hamburger{{ loop.index - 1 }}" onclick="showMenu(this.id)" class="hamburger"><span class="p-1" style="background: white; color: black">&#xFE19;</span></div>
@@ -96,6 +105,8 @@
                 </a>
               </h4>
               <p class="description d-none">{{ gallery_deets.gallery_name }}</p>
+
+              <p class=""><b>{{ gallery_deets.image_key |length }}</b> images in this gallery</p>
 
                   </div>
 
@@ -134,6 +145,79 @@
   </div>
 </div>
 
+
+  <!-- Edit Gallery Modal -->
+
+  {% for i in user_galleries %}
+
+<div class="modal fade" id="editModal{{ loop.index - 1 }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ loop.index - 1 }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Gallery Name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/dashboard" method="post">
+        <div class="modal-body">
+            <input class="form-control" id="edit_gallery_name{{ loop.index - 1 }}" name="edit_gallery_name" required type="text" onkeyup="editGallery(this.id)">
+            <input class="form-control d-none" name="gallery_key" type="text" value="{{ i.id() }}">
+          <small id="edit_error_message{{ loop.index - 1 }}" class="text-danger d-none">Gallery Name Already Exists</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <button type="submit" name="button" id="edit_create_gallery{{ loop.index - 1 }}" class="btn btn-primary" value="Edit Gallery">Update Gallery Name</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  {% endfor %}
+
+
+  <!-- Delete Image Modal -->
+
+  {% for i in user_galleries %}
+
+  {% set l = Gallery.get_by_id(i.id()).image_key |length %}
+
+<div class="modal fade" id="deleteModal{{ loop.index - 1 }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ loop.index - 1 }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModal">Delete {{ Gallery.get_by_id(i.id()).gallery_name }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/dashboard" method="post">
+        <div class="modal-body">
+          {% if l == 0  %}
+            <p>Are You Sure You Want To Delete This Gallery?</p>
+            <input class="form-control d-none" name="delete_gallery_id" type="text" value="{{ i.id() }}">
+            <input class="d-none" type="text" name="delete_gallery_key" value="{{ Gallery.get_by_id(i.id()) }}" />
+          {% else %}
+            <p id="delete_error_message" class="text-danger"> Gallery cannot be deleted till it is empty</p>
+          {% endif %}
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+          {% if l == 0  %}
+            <button type="submit" name="button" class="btn btn-primary" value="Yes">Yes</button>
+          {% else %}
+            <button type="submit" name="button" class="btn btn-secondary" value="Yes" disabled>Yes</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  {% endfor %}
 
   <!-- Template Main JS File -->
 <!--  <script src="js/main.js"></script>-->

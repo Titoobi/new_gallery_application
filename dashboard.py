@@ -7,6 +7,7 @@ from google.appengine.ext import ndb
 
 from myuser import MyUser
 from gallery import Gallery
+from images import Image
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -39,6 +40,16 @@ class Dashboard(webapp2.RequestHandler):
             user_info = MyUser.get_by_id(myuser_key.id())
             user_galleries = user_info.gallery_key
 
+            # all_imgs_in_gallery = []
+            # all_gallery_names = []
+            #
+            # for i in user_galleries:
+            #     aa = []
+            #     gallery_deets = Gallery.get_by_id(i.id()).image_key
+            #     for g in gallery_deets:
+            #         aa.append(Image.get_by_id(g.id()).image_name)
+            #     all_imgs_in_gallery.append(aa)
+            #     all_gallery_names.append(Gallery.get_by_id(i.id()).gallery_name)
 
         else:
             url = users.create_login_url(self.request.uri)
@@ -53,6 +64,7 @@ class Dashboard(webapp2.RequestHandler):
             'user_galleries': user_galleries,
             'myuser_key': myuser_key,
             'Gallery': Gallery,
+            'Image': Image,
         }
 
         template = JINJA_ENVIRONMENT.get_template('dashboard.html')
@@ -68,7 +80,7 @@ class Dashboard(webapp2.RequestHandler):
 
         action = self.request.get('button')
 
-        # CREATING A NEW GALLERY
+        # CREATE NEW GALLERY
         if action == 'Create New Gallery':
             # GET NEW GALLERY NAME
             gallery_name = self.request.get('gallery_name')
@@ -83,4 +95,26 @@ class Dashboard(webapp2.RequestHandler):
             associate_gallery_to_user.put()
             self.redirect('/dashboard')
 
+        elif action == 'Edit Gallery':
+            # GET CURRENT GALLERY DETAILS
+            gallery_key = int(self.request.get('gallery_key'))
+            current_gallery = Gallery.get_by_id(gallery_key)
+
+            # GET NEW GALLERY NAME
+            new_gallery_name = self.request.get('edit_gallery_name')
+            # self.response.write(gallery_id.gallery_name)
+
+            current_gallery.gallery_name = new_gallery_name
+            current_gallery.put()
+            self.redirect('/')
+
+        elif action == 'Yes':
+            # DELETE GALLERY
+            gall_id = int(self.request.get('delete_gallery_id'))
+            current_gallery = Gallery.get_by_id(gall_id)
+
+            user_info.gallery_key.remove(current_gallery.key)
+            user_info.put()
+            current_gallery.key.delete()
+            self.redirect('/')
 

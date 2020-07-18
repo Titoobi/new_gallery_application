@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>{{ gallery_details.gallery_name }}</title>
+  <meta content="" name="descriptison">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="img/favicon.png" rel="icon">
+  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+<!--  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
+
+  <!-- Template Main CSS File -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: eNno - v2.1.0
+  * Template URL: https://bootstrapmade.com/enno-free-simple-bootstrap-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+
+</head>
+
+<!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center">
+
+      <h1 class="logo mr-auto"><a href="/">GaLRy</a></h1>
+
+      <nav class="nav-menu d-none d-lg-block">
+        <ul>
+          <li>Welcome, {{ user_email }}</li>
+
+        </ul>
+      </nav><!-- .nav-menu -->
+
+      <a href="#" class="get-started-btn scrollto" data-toggle="modal" data-target="#exampleModal">+ Upload New Image</a>
+      <a href="{{ url }}" class="get-started-btn scrollto">{{ login_status }}</a>
+
+    </div>
+  </header><!-- End Header -->
+
+
+<body>
+
+  <!-- ======= Services Section ======= -->
+    <section id="services" class="services section-bg">
+      <div class="container">
+
+        <div class="section-title mt-5">
+          <span>Gallery</span>
+          <h2>{{ gallery_details.gallery_name }}</h2>
+
+        </div>
+
+        <div class="row">
+
+          {% for i in pictures_in_gallery %}
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" style="height: 300px">
+
+              <div class="icon-box" style="background-image: url('/view_photo/{{ Image.get_by_id( i.id() ).blobs }}');
+            width: 100%; background-size: cover; background-repeat: no-repeat;">
+
+              <div id="hamburger{{ loop.index - 1 }}" onclick="showMenu(this.id)" class="hamburger">
+                <span class="p-1" style="background: white; color: black">&#xFE19;</span>
+              </div>
+
+              <div class="icon"><i class="bx bxl-dribbble"></i></div>
+
+            </div>
+          </div>
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+    </section><!-- End Services Section -->
+
+
+<!-- Add New Image Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add New Gallery</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+            Upload File:
+          <input type="file" name="file" accept="image/png, image/jpeg," required />
+          <input class="d-none" type="text" name="gallery_id" value="{{ gallery_details.key.id() }}" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <button type="submit" name="button" class="btn btn-primary" value="Upload Image">Upload Image</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Delete Image Modal -->
+
+  {% for i in pictures_in_gallery %}
+
+<div class="modal fade" id="editModal{{ loop.index - 1 }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ loop.index - 1 }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Delete Photo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/gallery" method="post">
+        <div class="modal-body">
+          <p>Are You Sure You Want To Delete This Photo?</p>
+          <input class="form-control d-none" name="image_key" type="text" value="{{ i.id() }}">
+          <input class="d-none" type="text" name="gallery_id_delete" value="{{ gallery_details.key.id() }}" />
+          <small id="edit_error_message" class="text-danger d-none">Gallery Name Already Exists</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+          <button type="submit" name="button" id="edit_create_gallery" class="btn btn-primary" value="Yes">Yes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  {% endfor %}
+
+
+  <!-- Template Main JS File -->
+<!--  <script src="js/main.js"></script>-->
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+<script>
+
+    // Show Menu
+  function showMenu(clicked_id) {
+    let show_the_menu = document.getElementById(clicked_id);
+    let main_menu = document.getElementById(clicked_id).nextSibling;
+    while(main_menu && main_menu.nodeType != 1) {
+    main_menu = main_menu.nextSibling
+    }
+    main_menu.classList.toggle("d-none");
+  }
+
+
+
+</script>
+
+</body>
+
+</html>

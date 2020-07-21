@@ -61,7 +61,8 @@
         <div class="section-title mt-5">
           <span>Gallery</span>
           <h2>{{ gallery_details.gallery_name }}</h2>
-
+          <p>
+            You have <b>{{ count }}</b> image(s)
         </div>
 
         <div class="row">
@@ -70,11 +71,27 @@
 
           <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4" style="height: 300px">
 
+            {% if Image.get_by_id( i.id() ).image_name in duplicates %}
               <div class="icon-box" style="background-image: url('/view_photo/{{ Image.get_by_id( i.id() ).blobs }}');
+              width: 100%; background-size: cover; background-repeat: no-repeat; border: 2px solid red;">
+            {% else %}
+                <div class="icon-box" style="background-image: url('/view_photo/{{ Image.get_by_id( i.id() ).blobs }}');
             width: 100%; background-size: cover; background-repeat: no-repeat;">
+            {% endif %}
 
               <div id="hamburger{{ loop.index - 1 }}" onclick="showMenu(this.id)" class="hamburger">
                 <span class="p-1" style="background: white; color: black">&#xFE19;</span>
+              </div>
+              <div class="hamburger-menu d-none">
+                <nav class="d-lg-block">
+                  <ul class="list-unstyled">
+                    <li class="p-2 mt-2">
+                      <a href="#" class="p-2" data-toggle="modal" data-target="#editModal{{ loop.index - 1 }}" style="background: white;">
+                        Delete Photo
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
 
               <div class="icon"><i class="bx bxl-dribbble"></i></div>

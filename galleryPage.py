@@ -50,6 +50,16 @@ class GalleryPage(webapp2.RequestHandler):
         gallery_details = Gallery.get_by_id(url_id)
         pictures_in_gallery = gallery_details.image_key
 
+        count = 0
+        duplicate_count = 0
+        img_in_gallery = []
+        duplicates = []
+
+        for i in pictures_in_gallery:
+            count += 1
+            img_in_gallery.append(Image.get_by_id(i.id()).image_name)
+
+
         template_values = {
             'url': url,
             'user': user,
@@ -62,6 +72,7 @@ class GalleryPage(webapp2.RequestHandler):
             'upload_url': blobstore.create_upload_url('/upload'),
             'pictures_in_gallery': pictures_in_gallery,
             'Image': Image,
+            'count': count,
         }
 
         template = JINJA_ENVIRONMENT.get_template('gallery.html')

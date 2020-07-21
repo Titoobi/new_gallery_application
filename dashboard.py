@@ -40,16 +40,6 @@ class Dashboard(webapp2.RequestHandler):
             user_info = MyUser.get_by_id(myuser_key.id())
             user_galleries = user_info.gallery_key
 
-            # all_imgs_in_gallery = []
-            # all_gallery_names = []
-            #
-            # for i in user_galleries:
-            #     aa = []
-            #     gallery_deets = Gallery.get_by_id(i.id()).image_key
-            #     for g in gallery_deets:
-            #         aa.append(Image.get_by_id(g.id()).image_name)
-            #     all_imgs_in_gallery.append(aa)
-            #     all_gallery_names.append(Gallery.get_by_id(i.id()).gallery_name)
 
         else:
             url = users.create_login_url(self.request.uri)

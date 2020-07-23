@@ -62,7 +62,12 @@
           <span>Gallery</span>
           <h2>{{ gallery_details.gallery_name }}</h2>
           <p>
-            You have <b>{{ count }}</b> image(s)
+            You have <b>{{ count }}</b> image(s) and
+            {% if duplicate_count == 0%}
+              <b>{{ duplicate_count }}</b> image with duplicates in this gallery</p>
+            {% else %}
+              <b class="text-danger">{{ duplicate_count }}</b> image(s) with duplicate(s) in this gallery</p>
+            {% endif %}
         </div>
 
         <div class="row">

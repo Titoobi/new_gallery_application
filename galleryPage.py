@@ -54,11 +54,20 @@ class GalleryPage(webapp2.RequestHandler):
         duplicate_count = 0
         img_in_gallery = []
         duplicates = []
+        final_duplicates = []
 
         for i in pictures_in_gallery:
             count += 1
             img_in_gallery.append(Image.get_by_id(i.id()).image_name)
 
+        for x in img_in_gallery:
+            if img_in_gallery.count(x) > 1:
+                duplicates.append(x)
+                for y in duplicates:
+                    if y not in final_duplicates:
+                        final_duplicates.append(y)
+
+        duplicate_count = len(final_duplicates)
 
         template_values = {
             'url': url,
@@ -73,6 +82,8 @@ class GalleryPage(webapp2.RequestHandler):
             'pictures_in_gallery': pictures_in_gallery,
             'Image': Image,
             'count': count,
+            'duplicates': duplicates,
+            'duplicate_count': duplicate_count,
         }
 
         template = JINJA_ENVIRONMENT.get_template('gallery.html')
@@ -102,18 +113,6 @@ class GalleryPage(webapp2.RequestHandler):
             image_details.key.delete()
             self.redirect('/gallery?url=' + str(gallery_details.key.urlsafe()))
 
-        elif action == 'Edit Gallery':
-            # GET CURRENT GALLERY DETAILS
-            gallery_key = int(self.request.get('gallery_key'))
-            current_gallery = Gallery.get_by_id(gallery_key)
-
-            # GET NEW GALLERY NAME
-            new_gallery_name = self.request.get('edit_gallery_name')
-            # self.response.write(gallery_id.gallery_name)
-
-            current_gallery.gallery_name = new_gallery_name
-            current_gallery.put()
-            self.redirect('/')
 
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):

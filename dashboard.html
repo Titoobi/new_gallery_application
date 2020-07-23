@@ -61,7 +61,8 @@
           <span>Gallery</span>
           <h2>Gallery</h2>
           <p>
-            Here is a list of all your image galleries.
+            Here is a list of all your image galleries. You have <b class="text-danger">{{ multiple_results| length }}</b> images in multiple galleries.
+            <a href="#" class="get-started-btn scrollto" data-toggle="modal" data-target="#multipleModal">Click here to view</a>
           </p>
         </div>
 
@@ -220,6 +221,33 @@
   {% endfor %}
 
 
+<!--  VIEW MULTIPLE IMAGES-->
+<div class="modal fade" id="multipleModal" tabindex="-1" role="dialog" aria-labelledby="multipleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">List of Galleries With The Same Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/dashboard" method="post">
+        <div class="modal-body">
+
+          <ol>
+            {% for i in multiple_results%}
+              <li>{{ i }}</li>
+            {% endfor %}
+          </ol>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
   <!-- Template Main JS File -->
 <!--  <script src="js/main.js"></script>-->

@@ -5,6 +5,7 @@ import webapp2
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+from collections import defaultdict
 from myuser import MyUser
 from gallery import Gallery
 from images import Image
@@ -40,6 +41,44 @@ class Dashboard(webapp2.RequestHandler):
             user_info = MyUser.get_by_id(myuser_key.id())
             user_galleries = user_info.gallery_key
 
+            all_imgs_in_gallery = []
+            all_gallery_names = []
+            multiple_results = []
+
+            for i in user_galleries:
+                aa = []
+                gallery_deets = Gallery.get_by_id(i.id()).image_key
+                for g in gallery_deets:
+                    aa.append(Image.get_by_id(g.id()).image_name)
+                all_imgs_in_gallery.append(aa)
+                all_gallery_names.append(Gallery.get_by_id(i.id()).gallery_name)
+
+            # self.response.write(all_imgs_in_gallery)
+
+            dic = defaultdict(list)
+
+            for i, x in enumerate(all_imgs_in_gallery):
+                for j, y in enumerate(x):
+                    dic[y].append((i, j))
+
+            for num, coords in dic.items():
+                if len(coords) > 1:
+                    multiple_text = "\"{0}\" appears in ".format(num)
+                    uu = []
+                    unique_uu = []
+                    for x in coords:
+                        jj = int(str(x)[1])
+                        uu.append(all_gallery_names[jj])
+                        # for q in uu:
+                        # yu = len(all_gallery_names[jj] in uu)
+                        yu = uu.count(all_gallery_names[jj])
+                        if yu <= 1:
+                            unique_uu.append(all_gallery_names[jj])
+
+                    multiple_results.append(multiple_text + ", ".join(str(x) for x in unique_uu))
+
+
+
 
         else:
             url = users.create_login_url(self.request.uri)
@@ -55,6 +94,7 @@ class Dashboard(webapp2.RequestHandler):
             'myuser_key': myuser_key,
             'Gallery': Gallery,
             'Image': Image,
+            'multiple_results': multiple_results,
         }
 
         template = JINJA_ENVIRONMENT.get_template('dashboard.html')
@@ -70,7 +110,7 @@ class Dashboard(webapp2.RequestHandler):
 
         action = self.request.get('button')
 
-        # CREATE NEW GALLERY
+        # CREATE New Gallery
         if action == 'Create New Gallery':
             # GET NEW GALLERY NAME
             gallery_name = self.request.get('gallery_name')
@@ -92,7 +132,6 @@ class Dashboard(webapp2.RequestHandler):
 
             # GET NEW GALLERY NAME
             new_gallery_name = self.request.get('edit_gallery_name')
-            # self.response.write(gallery_id.gallery_name)
 
             current_gallery.gallery_name = new_gallery_name
             current_gallery.put()

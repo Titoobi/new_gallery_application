@@ -1371,8 +1371,10 @@ section {
 .hamburger {
     position: relative;
     left: 50%;
-    top: -50%;
+    /*top: -50%;*/
+    top: -70px;
     cursor: pointer;
+    z-index: 2;
 }
 
 .hamburger-menu {
